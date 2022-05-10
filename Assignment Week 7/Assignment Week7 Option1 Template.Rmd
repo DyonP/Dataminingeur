@@ -1,0 +1,94 @@
+---
+always_allow_html: true
+title: "Assignment Week 7 Option 1"
+author: "Jihun Bae"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(tidytext)
+library(wordcloud)
+library(wordcloud2)
+library(RColorBrewer)
+# install.packages("friends")
+library(friends)
+
+```
+
+
+
+Install “friends” package (install.packages(“friends”)). Use “friends” package and write codes for following tasks:
+
+
+1. Tokenize the text and remove stop-words.
+```{r  Q7.1.1}
+
+friends # this is the dataset
+
+tidy_friends <- friends  %>% 
+  unnest_tokens(word,text) #tokenising the text 
+
+tidy_friends <- tidy_friends %>%
+  anti_join(get_stopwords()) #removing the stopwords
+
+tidy_friends # seems correct 
+```
+
+2. Calculate word frequency.
+```{r  Q7.1.2}
+
+tidy_friends %>%  # this is the dataset that we calculated in the previous tokenisation step
+  count(word, sort = TRUE) 
+
+```
+
+3. Make a wordcloud.
+```{r  Q7.1.3}
+
+tidy_friends %>% 
+  count(word) %>%
+  with(wordcloud::wordcloud(word,n,max.words = 100)) 
+
+tidy_friends
+
+```
+
+
+4. Count the frequency of those positive and negative words. Show the most frequent positive and negative words, respectively, using head() function.
+```{r Q7.1.4}
+sentiment1
+
+sentiment1 <- get_sentiments("bing") %>%
+  count( sentiment == "negative") # this works but then I need to figure out how to rename the rows
+
+
+sentiment2 <- get_sentiments("bing") %>%
+  filter(sentiment == "negative", sort = TRUE)
+
+head(sentiment2)
+
+
+#ok so i didnt get this box and also further on from here needs to be studdied 
+
+```
+
+
+5. Visualize the frequency of positive and negative words by each character.
+```{r Q7.1.5}
+
+
+
+
+
+
+```
+	
+
+
+
+
