@@ -1,0 +1,332 @@
+---
+title: "Assignment Week 6"
+author: "Jihun Bae"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(tidytext)
+
+```
+
+
+# Assignment 6.1.1
+
+Fill in the black below to produce the outcome.
+
+
+1. Q6.1.1.1 
+
+```{r Q6.1.1.1}
+# Match ".a.b.c" only
+
+
+str_subset(c(".a.b.c", "aabbcc", ".a.b.c.d"), c("\\.[c]$"))
+
+
+```
+
+2. Q6.1.1.2
+
+```{r Q6.1.1.2}
+# Match "$^$" only
+
+str_subset(c("$^$", "ab$^$sfas"),"^[$]") # the hat indicates that it starts with an $
+
+```
+
+
+
+# Assignment 6.1.2
+Using the corpus of common words in stringr::words, create regular expressions to find all words that meet the following questions.
+
+*Use str_subset(stringr::words,             )
+
+## Questions
+
+1. Find all words that start with a vowel.
+1. Find all words that only contain consonants. (*Hint: thinking about matching “not”-vowels.)
+1. Find all words that end with "ed", but not with "eed". (e.g., “ed”, “bed”, “hundred”, “red”)
+1. Find all words that end with "ing" or "ise".
+
+	
+
+## Answers 6.1.2
+1. Q6.1.2.1
+```{r Q6.1.2.1}
+#Find all words that start with a vowel.
+
+df <- stringr::words
+
+str_subset(df,"^[aeiou]" )
+
+```
+
+
+2. Q6.1.2.2
+```{r Q6.1.2.2}
+#Find all words that only contain consonants. (*Hint: thinking about matching “not”-vowels.)
+
+str_subset(df,"^[^aeiou]+$" ) # check this later like why do they use the plus sign
+                              # the + sign indicates one or more
+
+
+```
+
+3. Q6.1.2.3
+```{r Q6.1.2.3}
+#Find all words that end with "ed", but not with "eed". (e.g., “ed”, “bed”, “hundred”, “red”)
+
+str_subset(df,"[^e]ed$" )
+
+#str_subset(df,"ed$" ) # checking all the words that end with eed also to make sure that the output is right
+
+
+
+```
+
+4. Q6.1.2.4
+```{r Q6.1.2.4}
+#Find all words that end with "ing" or "ise".
+
+str_subset(df,"" ) # couldnt figue this out.
+
+
+```
+	
+
+
+
+# Assignment 6.1.3
+Create a regular expression that will match the following telephone numbers.
+
+"123-456-7890", "(123)456-7890", "(123) 456-7890", "(123)5-2351"
+
+## Questions
+1. match telephone number "123-456-7890"
+1. match telephone numbers "(123)456-7890" and "(123) 456-7890"
+
+
+
+## Answers 6.1.3
+1. Q6.1.3.1
+```{r Q6.1.3.1}
+
+#match telephone number "123-456-7890"
+x <- c("123-456-7890", "(123)456-7890", "(123) 456-7890", "(123)5-2351")
+
+str_subset(x,"[/d{3}][-][/d{3}][-][/d{4}]") # I couldnt figure out why this one wont work
+
+str_subset(x,"[/d{3}][-]") # this one works correctly but is only half of the syntax
+
+
+```
+
+2. Q6.1.3.2
+```{r Q6.1.3.2}
+
+#match telephone numbers "(123)456-7890" and "(123) 456-7890"
+
+x <- c("123-456-7890", "(123)456-7890", "(123) 456-7890", "(123)5-2351")
+
+str_subset(x, "\\(123\\)(?:4|\\s)") #ahh still have to figure out how the \\ works
+
+str_subset(x,"[. | /d{3} | .] 7890$")
+
+
+```
+
+
+# Assignment 6.2
+Consider the following dataset for healthcare organizations (hcodata):
+How can you find the organizations with limited liability? (Hint: you should find the name of organization includes “B.V.” (or equivalent).
+
+
+```{r Q6.2, echo=FALSE, message=FALSE, warning=FALSE}
+setwd("C:/Users/pache/OneDrive - Erasmus University Rotterdam/Desktop/syons programming/Assignment Week6")
+
+hcodata <- read_csv("hcodata.csv")
+head(hcodata) 
+
+
+str_subset(hcodata$Name,"[Vv].?$") #remmeber to access the column in this way or else it wont work. Also I didnt understand why the questuon mark is there in the regex. it translates to either one or more "." at the end. 
+
+
+
+
+
+```
+
+# Assignment 6.3
+Extract and plot features from “titanic_train” data.
+
+## Questions
+1. Extract titles from "Names". View the first 10 rows of titles using head() function.
+1. Plot the new variable "title" using ggplot2.
+1. Extract Family names from "Names". View the first 10 rows of Family names using head() function.
+1. Plot the 10 most frequent family names using ggplot2.
+
+
+
+## Answers 6.3
+
+1. Q6.3.1 (wouldng reccomenr using this peice of code, instead use the next code block)
+```{r Q6.3.1, warning=FALSE, message=FALSE}
+titanic_train <- read_csv("titanic_train.csv") 
+head(titanic_train) #view the data
+
+titles <- str_split(titanic_train$Name, " ") #split with spaces
+head(titles) #check
+
+o <- unlist(titles) #make it a straight line
+view(o) #check
+
+jk <- tibble() #creating a black tibble to read into
+
+jk <- str_subset(o,"[.]$") #extracting the values and putting them into a black tibble
+view(jk)
+df5 <- data.frame(jk) # converting the tibble into a dataframe
+
+freq <- count(df5, arrange(df5,decreasing = TRUE)) # tallies all the records into a tabel which can be read by a histogram
+freq #check
+
+ggplot(freq, aes(x=jk, y=n)) + geom_bar(stat='identity') # remember to use the stat identity option
+
+
+# good video to watch that explains how to do this
+#https://www.youtube.com/watch?v=sa-TUpSx1JA&list=LL&index=2&t=498s
+
+```
+```{r}
+getwd()
+# splitting each cell inside the character vector "Name"
+# this will give us 891 lists words
+titles <- str_split(titanic_train$Name, " ") %>%
+# unlisting each list will yield (891*number_of_words_in_each_cell) words
+# among them all the titles
+unlist() %>%
+# and we choose only those strings (titles, in this case)
+# that end with "."
+str_subset(., "\\.$") %>%
+# and making a tibble out of them
+tibble()
+
+# changing the name of the column in the tibble
+colnames(titles) = "titles"
+head(titles)
+```
+
+The correct code block which should be used
+```{r}
+
+# Extract titles from "Names". View the first 10 rows of titles using head() function.
+
+titanic_train <- read_csv("titanic_train.csv")
+
+# head(titanic_train, 5)
+
+titanic_df <- tibble(titanic_train) # creating a blank tibble
+
+titanic_df <- titanic_df %>% #we are using this tibble created above
+mutate(lcName = str_to_lower(Name)) # we need to sort of order the thing to en for cross use accross platforms
+
+titanic_df <- titanic_df %>% #selecting the dataset that we want to use
+mutate(title = str_extract(lcName, "(\\s)[a-zA-Z]+(?=\\.)")) # extracting the titles from the name column
+head(titanic_df$title, 10) #using the dead command to display the fist 10 lines of code
+
+
+```
+
+
+2. Q6.3.2
+```{r Q6.3.2}
+
+# Plot the new variable "title" using ggplot2.
+
+ggplot(data.frame(table(titanic_df$title)),aes(x=reorder(Var1, -Freq),y=Freq))+ 
+  #table() uses the cross-classifying factors to build a contingency table of the counts at each combination of factor levels.
+  #hmm it could be that for some reason that GGplot cannot plot the tibble therefore he converts it into a dataframe
+geom_col()+
+labs(title="Count of Title", x="Title",y="Count")
+
+# it works perfects when you plot it inline. 
+
+
+
+```
+
+3. Q6.3.3
+```{r Q6.3.3}
+#Extract Family names from "Names". View the first 10 rows of Family names using head() function.
+
+head(titles)
+head(o)
+
+ntib <- tibble()
+ntib <- str_extract(titanic_train$Name,"[^,]+") # the regex reads as before the comma one or more
+view(ntib)
+
+fam_names <- str_extract(titanic_df$Name,"[a-zA-Z]^\\,") # dont use this lol fail
+
+
+```
+
+4. Q6.3.4 (fail - dont use this)
+```{r Q6.3.4}
+# Plot the 10 most frequent family names using ggplot2.
+
+str(ntib)
+ntib2 <- data.frame(ntib)# until here is correct as we can see the df
+family <- count(ntib2, arrange(ntib2, freq, decreasing = TRUE))
+family
+
+sum(ntib)
+
+ggplot(ntib= sort(ntib, decreasing = FALSE))+ geom_col(mapping = aes(x= "names", y= "count"))
+
+```
+
+Actual code block to use 
+```{r}
+# creating a df with the name frequencies (sorted in descenting order)
+freq_fnames <- ntib %>%
+count() %>%
+arrange(.,freq, decreasing = TRUE)
+
+up <- data.frame("a","b","c","f","v",
+                 "g","a","k","d","b","f","f")
+
+ggplot(up, aes(x = reorder(1, -freq), y = freq))+
+geom_bar(stat = "identity")
+
+
+ggplot() + geom_bar(aes(up))
+
+
+freq_fnames %>%
+# selecting the top 10 frequent names
+slice(., 1:10) %>%
+  
+# and plotting them
+ggplot(., aes(x = reorder(family_name, -freq), y = freq))+
+geom_bar(stat = "identity")
+
+```
+
+
+
+
+
+
+
+
+
+
+
+

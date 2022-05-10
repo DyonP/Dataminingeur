@@ -1,0 +1,205 @@
+---
+title: "Assignment Week 6"
+author: "Jihun Bae"
+date: '`r format(Sys.Date(), "%B %d, %Y")`'
+output:
+  pdf_document: default
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, echo=FALSE, message=FALSE, warning=FALSE}
+
+library(tidyverse)
+library(tidytext)
+
+```
+
+
+# Assignment 6.1.1
+
+Fill in the black below to produce the outcome.
+
+
+1. Q6.1.1.1 
+
+```{r Q6.1.1.1}
+# Match ".a.b.c" only
+
+str_subset(c(".a.b.c", "aabbcc", ".a.b.c.d"), c(           ))
+
+```
+
+2. Q6.1.1.2
+
+```{r Q6.1.1.2}
+# Match "$^$" only
+
+str_subset(c("$^$", "ab$^$sfas"),              )
+
+```
+
+
+
+# Assignment 6.1.2
+Using the corpus of common words in stringr::words, create regular expressions to find all words that meet the following questions.
+
+*Use str_subset(stringr::words,             )
+
+## Questions
+
+1. Find all words that start with a vowel.
+1. Find all words that only contain consonants. (*Hint: thinking about matching “not”-vowels.)
+1. Find all words that end with "ed", but not with "eed". (e.g., “ed”, “bed”, “hundred”, “red”)
+1. Find all words that end with "ing" or "ise".
+
+	
+
+## Answers 6.1.2
+1. Q6.1.2.1
+```{r Q6.1.2.1}
+
+```
+
+
+2. Q6.1.2.2
+```{r Q6.1.2.2}
+
+
+```
+
+3. Q6.1.2.3
+```{r Q6.1.2.3}
+
+
+```
+
+4. Q6.1.2.4
+```{r Q6.1.2.4}
+
+
+```
+	
+
+
+
+# Assignment 6.1.3
+Create a regular expression that will match the following telephone numbers.
+
+"123-456-7890", "(123)456-7890", "(123) 456-7890", "(123)5-2351"
+
+## Questions
+1. match telephone number "123-456-7890"
+1. match telephone numbers "(123)456-7890" and "(123) 456-7890"
+
+
+
+## Answers 6.1.3
+1. Q6.1.3.1
+```{r Q6.1.3.1}
+x <- c("123-456-7890", "(123)456-7890", "(123) 456-7890", "(123)5-2351")
+
+```
+
+2. Q6.1.3.2
+```{r Q6.1.3.2}
+x <- c("123-456-7890", "(123)456-7890", "(123) 456-7890", "(123)5-2351")
+
+```
+
+
+# Assignment 6.2
+Consider the following dataset for healthcare organizations (hcodata):
+How can you find the organizations with limited liability? (Hint: you should find the name of organization includes “B.V.” (or equivalent).
+
+
+```{r Q6.2, echo=FALSE, message=FALSE, warning=FALSE}
+hcodata <- read_csv("hcodata.csv")
+head(hcodata)
+
+
+```
+
+# Assignment 6.3
+Extract and plot features from “titanic_train” data.
+
+## Questions
+1. Extract titles from "Names". View the first 10 rows of titles using head() function.
+1. Plot the new variable "title" using ggplot2.
+1. Extract Family names from "Names". View the first 10 rows of Family names using head() function.
+1. Plot the 10 most frequent family names using ggplot2.
+
+
+
+## Answers 6.3
+
+1. Q6.3.1
+```{r Q6.3.1, warning=FALSE, message=FALSE}
+# Extract titles from "Names". View the first 10 rows of titles using head() function.
+
+titanic_train <- read_csv("titanic_train.csv")
+head(titanic_train, 5)
+
+df1 <- str_split(titanic_train$Name," ")
+df2 <- unlist(df1)  
+df3 <- data.frame(str_subset(df2,"\\.$"))
+df3
+
+head(df3,10)
+
+```
+
+2. Q6.3.2
+```{r Q6.3.2}
+#plot the new variable "title" using ggplot2.
+
+freq <- count(df3, arrange(df3, decreasing = TRUE)) #taollys up all the items before they can be plotted 
+freq
+colnames(freq)
+
+ggplot(freq, aes(x= str_subset.df2.........,y=n)) + geom_bar(stat='identity') # remember to use the stat identity option ## also remember to list the column names correctly in AES. use colnames to check.
+
+```
+
+3. Q6.3.3
+```{r Q6.3.3}
+# Extract Family names from "Names". View the first 10 rows of Family names using head() function.
+familynames <- tibble()
+familynames <- str_extract(titanic_train$Name, "[^,]+")
+familynames1 <- data.frame(familynames)
+
+freq1 <-  count(familynames1, arrange(familynames1, decreasing = TRUE))#the trick with the count function is you have to input a data frame
+freq1
+
+colnames(freq1)
+
+ggplot(freq1, aes(x= familynames,y=n)) + geom_bar(stat='identity') # ok so this works fine
+names <- freq1[,1]
+head(names,10)
+
+
+
+```
+
+4. Q6.3.4
+```{r Q6.3.4}
+# Plot the 10 most frequent family names using ggplot2
+
+xya <- freq1 %>% arrange(desc(n))#order the names in descending order
+view(xya) #check - yes it is correct
+xya1 <- xya[1:10,] # selecting the first 10 rows
+ggplot(xya1, aes(x= familynames,y=n)) + geom_bar(stat='identity') #plotting the first 10 rows
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
