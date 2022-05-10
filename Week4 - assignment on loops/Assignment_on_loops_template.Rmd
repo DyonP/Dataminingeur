@@ -1,0 +1,318 @@
+---
+title: "On Loops"
+author: "Sander Renes"
+date: "6-3-2020"
+output: pdf_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library("jsonlite")
+knitr::opts_chunk$set(echo = TRUE)
+library("stringr")
+library(stargazer)
+library(tidyverse)
+library(knitr)
+library(dplyr)
+```
+# Take home Exercises - Loops
+```{r, echo=FALSE}
+fnames <- c("gglot()","geom_point", "str()","setwd()", "tibble()", "paste0()","read_csv()","bind_rows()", "dim()","while","for", "seq_along()","stargazer()", "list.files()", "min()", "max()", "mutate()", "filter()", "near()", "select()", "group_by", "summarise()", "rename()", "rnorm()", "saveRDS()", "readRDS", "lm()", "print","stargazer()")
+fnames <- fnames %>% as.data.frame %>% arrange(fnames)
+kable(fnames, col.names="Functions needed")
+```
+
+\pagebreak
+
+ 
+## exercise 1 
+in the folder "Weekly data - year 1", you find .csv files with the weekly data on the costs of producing a product.  
+There is one file per week. Every file contains the data on 5 production days for 2 production lines, A and B, so 10 observations per file, 50 weeks means 50 files.   
+
+### exercise 1a
+Use the read_csv function to load all of the files in to one Tibble called "production_data_df" with a *for* loop  (Hint, suppress output of the read_csv function)
+
+```{r , include=TRUE, warning = FALSE, message=FALSE}
+# creating our tibble
+production_data_df <- tibble()
+# setting the working directory
+setwd("C:/Users/pache/OneDrive/Desktop/Practice in R/Week4 - assignment on loops/Weekly data - year 1")
+# reading and binding the multiple .csv files from "weekly data - year 1", with a for loop
+for (i in 1:50){
+production_data_df <- rbind(production_data_df, tibble(read.csv(paste0("week", i, ".csv"))))
+}
+dim(production_data_df)
+
+# expected output: [1] 500   5
+```
+
+### exercise 1b
+now try this with a *while* loop  
+
+```{r , include=TRUE, warning = FALSE, message=FALSE}
+# cleaning the environment
+rm(list = ls())
+# creating our tibble
+production_data_df <- tibble()
+# setting the working directory
+setwd("C:/Users/pache/OneDrive/Desktop/Practice in R/Week4 - assignment on loops/Weekly data - year 1")
+
+# reading and binding the multiple csv files from "weekly data - year 1", with a while loop
+i <- 1
+while (i <= 50){
+production_data_df <- rbind(production_data_df, tibble(read.csv(paste0("week", i, ".csv"))))
+i <- i + 1
+}
+
+# expected output: [1] 500   5
+
+
+```
+
+### exercise 1c
+Now  use a *seq_along* loop (Hint look at the 'dir' functions) 
+```{r , include=TRUE, warning = FALSE, message=FALSE}
+
+#your code goes here 
+
+
+#your code ends here
+# uncomment the line below
+
+# dim(production_data_df)
+
+# expected output: [1] 500   5
+
+
+```
+
+### exercise 1d
+did you do the first step of writing down the basics? if not, do so now, for all 3 loops.  
+
+### answer
+
+
+
+### end answer
+
+### exercise 1e
+the advantage of the loops are that you do not have to repeat yourself 50 times to load and append. Still these loops are not the same, which of these loops could you re-use most easily for different folders or periods?   
+
+### answer
+
+
+### end answer
+
+
+
+### exercise 1f
+
+1) Now what happens if you ask for production_data_df$cost[4]? How can you find the same item using two dimensional indexing on the tibble (hint try asking for the same item in a 2-dimensional list, or extracting it from a numeric vector selected from the tibble/list)  
+2) What value do you get if you ask production_data_df[1,3] and production_data_df[3,1]? Where do you find them in the tible?
+
+### answer
+
+
+### end answer
+
+
+
+## Exercise 2: 
+Try running your best loop on the folder "Weekly data-year2". Get the data in there correctly and clean out all mistakes:
+(HINT: check that you have the right number of obs per week for all weeks, and have the right variables for all weeks)
+
+
+```{r , include=FALSE}
+#your code goes here
+
+
+```
+
+```{r , include=TRUE}
+
+getwd()
+
+# getting the file names from folder "Weekly data-year 2"
+file_names <- dir(path = "C:/Users/465935dp/OneDrive - Erasmus University Rotterdam/Desktop/syons programming/Week4 - assignment on loops/Weekly data-year 2")
+
+# creating our tibble
+weekly_data_year2 <- tibble()
+
+# importing the data
+for (name in file_names){
+weekly_data_year2 <- rbind(weekly_data_year2, tibble(
+read_csv(paste0("C:/Users/465935dp/OneDrive - Erasmus University Rotterdam/Desktop/syons programming/Week4 - assignment on loops/Weekly data-year 2/",name)), loop = name))
+}
+
+
+weekly_data_year2 <- weekly_data_year2[,-6] # deleting the extra column, cleaning the data
+
+
+# expected output: 
+# Classes ‘tbl_df’, ‘tbl’ and 'data.frame':	500 obs. of  5 variables:
+#........
+
+
+```
+
+## exercise 3
+
+0) load the data from exercise 2, and make a separate tibble containing only the data of product A, call it "product_A"
+
+### exercise 3a
+Find the highest and lowest value of cost per unit for product A.  
+
+
+```{r exercise 3a, include=TRUE}
+product_A <- filter(weekly_data_year2, product_line == "A") # separate tibble with only data from product a
+
+a <- max(product_A$total_cost)
+b <- min(product_A$total_cost)
+
+```
+  
+  
+### exercise 3b
+Get the lists of weeks in which the cost per unit are equal to the maximum and minimum. What parts of the year are those?  
+
+```{r  exercise 3b, include=TRUE}
+max_week <- filter(product_A, total_cost==a)## fill in the number your found for the maximum and uncomment
+min_week <- filter(product_A, total_cost==b)## fill in number your found for the minimum and uncomment
+
+max_week
+
+```
+
+### exercise 3c
+The code in q2 has an issue because of the precision of numbers stored in your computer. There are 2 solutions available, either the near() function, or the max() and min() functions. read the help-files of these functions and find the week with the maximum using near, and the minimum using the min() function.
+
+```{r  exercise 3c, include=TRUE}
+#your code goes here
+#lol skip this i aint doing this 
+```
+
+Many of the operations you can do in loops, you can also do directly on the vector of data. Vectorization of an operation is a substitute for loops. In the past (and still in some programming languages) vectorization was much faster and more computationally efficient than loops, but the difference is quickly disappearing in R (mostly because R has vectorized most loop operations).
+For instance, if you want to add the production costs of product A and product B in every week, you could loop over every week to add them together, or you could use a vectorized version. Make a vector (i.e. variable in a tibble) with the production cost of A, a variable with the production cost of B and use a vectorized addition (mutate command) to add them together in a new variable.
+
+### exercise 3d
+Create a tibble with the maximum of per unit production cost per week (i.e. maximum over the five days in the week) for product A, and a variable indicating the week. Use a loop over the weeks in the dataset "Product_A".
+
+
+```{r  exercise 3d, include=TRUE}
+#your code goes here
+b_tibble <- tibble() #creating a blank tibble
+
+weeks <- unique(product_A$calander_week)
+
+#stopped here
+```
+
+### exercise 3e
+Create a tibble with the maximum of per unit production cost per week (i.e. maximum over the five days in the week) for product A, and a variable indicating the week. Use the vectorized command summarise() {hint: think groups and group_by}. 
+
+```{r  exercise 3e, include=TRUE}
+#your code goes here
+
+
+```
+
+### exercise 3f
+Plot the two variables you created in d) and e) in a single plot and check that they are the same. 
+```{r exercise 3f, include=TRUE}
+#your code goes here
+
+
+```
+
+
+## exercise 4
+We have not used loops to do much that cannot be done without a loop. Loading the data as in exercise 1 could have been done through existing commands (see the document "planning to load the data.Rmd"). 
+In many statistical analysis, however, using loops can help a lot. For instance in doing subset analysis. 
+In our production data, we might suspect that seasonal patterns exist. If this is the case, the relation between some of our variables should be different from month to month, and that we can check by calculating the same relation -- either a correlation of a regression coefficient-- every month. 
+In our production costs, other_costs can be split into labor and overhead costs. 
+
+"production_data_df2.rds" contains the same data as in the last questions, but now breaks some of the costs down to labor and overhead costs. 
+Overhead is applied in this company via labor costs, but the company is unsure whether the relation between overhead and labor is constant over the year.
+To test it, the company compared the relation between overhead and labor over the entire year, to the relation found in each of 12 blocks of 4 weeks called "month". Both relations are found by running linear regressions. Note that this is essentially subset-analysis for 12 subsets of data. 
+They used this (terrible) code:
+
+```{r production_data regression, results='asis'}
+
+# Load the data in "production_data_df2.rds" 
+ production_data_df2<-readRDS(file = "production_data_df2.rds")
+
+# Fit the overhead rate for the entire period:
+lm(overhead ~ labor_cost, data=production_data_df2) 
+
+
+#check if it is the same in all months
+
+  data_month1<-filter(production_data_df2, month==1 )
+  data_month2<-filter(production_data_df2, month==2 )
+  data_month3<-filter(production_data_df2, month==3 )
+  data_month4<-filter(production_data_df2, month==4 )
+  data_month5<-filter(production_data_df2, month==5 )
+  data_month6<-filter(production_data_df2, month==6 )
+  data_month7<-filter(production_data_df2, month==7 )
+  data_month8<-filter(production_data_df2, month==8 )
+  data_month9<-filter(production_data_df2, month==9 )
+  data_month10<-filter(production_data_df2, month==10 )
+  data_month11<-filter(production_data_df2, month==11 )
+  data_month12<-filter(production_data_df2, month==12 )
+  
+  linearMod1 <- lm(overhead ~ labor_cost, data=data_month1)  # build linear regression model on month 1
+  linearMod2 <- lm(overhead ~ labor_cost, data=data_month2)  # build linear regression model on month 2
+  linearMod3 <- lm(overhead ~ labor_cost, data=data_month3)  # build linear regression model on month 3
+  linearMod4 <- lm(overhead ~ labor_cost, data=data_month4)  # build linear regression model on month 4
+  linearMod5 <- lm(overhead ~ labor_cost, data=data_month5)  # build linear regression model on month 5
+  linearMod6 <- lm(overhead ~ labor_cost, data=data_month6)  # build linear regression model on month 6
+  linearMod7 <- lm(overhead ~ labor_cost, data=data_month7)  # build linear regression model on month 7
+  linearMod8 <- lm(overhead ~ labor_cost, data=data_month8)  # build linear regression model on month 8
+  linearMod9 <- lm(overhead ~ labor_cost, data=data_month9)  # build linear regression model on month 9
+  linearMod10 <- lm(overhead ~ labor_cost, data=data_month10)  # build linear regression model on month 10
+  linearMod11 <- lm(overhead ~ labor_cost, data=data_month1)  # build linear regression model on month 11
+  linearMod12 <- lm(overhead ~ labor_cost, data=data_month12)  # build linear regression model on month 12
+
+  print ("month 1")
+print(linearMod1)
+  print ("month 2")
+print(linearMod2)
+  print ("month 3")
+print(linearMod3)
+  print ("month 4")
+print(linearMod4)
+  print ("month 5")
+print(linearMod5)
+  print ("month 6")
+print(linearMod6)
+  print ("month 7")
+print(linearMod7)
+  print ("month 8")
+print(linearMod8)
+  print ("month 9")
+print(linearMod9)
+  print ("month 10")
+print(linearMod10)
+  print ("month 11")
+print(linearMod11)
+  print ("month 12")
+print(linearMod12)
+```   
+
+### exercise 4a
+
+Please rewrite the code above, feel free to remove the old code to reduce the size of your assignment output, the code above using a loop to make the code easier to read, and remove the mistake in the code.* 
+  Bonus assignment (good prep for your thesis), use the stargazer package to organize the output of the regression in (a) clear table(s)
+
+
+### exercise 4b
+Note that there is also an indicator for weeks, what would have to change in your loop to run the loop over all weeks in stead of the months?  (explain, no code required)
+
+
+
+### answer
+
+
+### end answer
